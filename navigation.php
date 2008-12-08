@@ -16,7 +16,7 @@
  * @license			http://www.gnu.org/licenses/lgpl.html GNU LESSER GENERAL PUBLIC LICENSE
  */
 class NavigationHelper extends HtmlHelper {
-    
+
     /**
      * Returns a formatted <ul> with links
      * @param array $items An array containing all children for the list
@@ -28,21 +28,32 @@ class NavigationHelper extends HtmlHelper {
             return;
         }
 
-        $links = array();
-        
+        $links = $class = array();
+
         foreach($items as $item) {
             if(count($item) == 2) {
                 list($text, $url) = $items;
                 $itemOptions = array();
-            } else {
-                list($text, $url, $itemOptions) = $item;
+            }else if(count($item) == 4) {
+                list($text, $url, $itemOptions, $liclass) = $item;
+            }else{
+            	list($text, $url, $itemOptions) = $item;
             }
-            $links[] = sprintf($this->tags['li'], ($this->isActiveController($url) ? ' class="active"' : ''), parent::link($text, $url, $itemOptions));
+
+            if(!isset($liclass) || empty($liclass)) {
+            	$class['active'] = 'active';
+            	$class['notActive'] = '';
+            }else{
+            	$class = $liclass;
+            	unset($liclass);
+            }
+            $links[] = sprintf($this->tags['li'], ' class="'.($this->isActiveController($url) ? $class['active'] : $class['notActive']).'"', parent::link($text, $url, $itemOptions));
+            unset($itemOptions);
         }
-        
+
         return sprintf($this->tags['ul'], $this->_parseAttributes($attributes, null, ' ', ''), implode("\n", $links));
     }
-    
+
     /**
      * Returns a link with class="active" if the url is the currently active url
      * @param string $title The content to be wrapped in <a/>
@@ -57,13 +68,13 @@ class NavigationHelper extends HtmlHelper {
             } else {
                 $options['class'] = 'active';
             }
-        }     
-        
+        }
+
         $out = parent::link($title, $url, $options);
-        
+
         return $out;
     }
-    
+
     /**
      * Checks if a given url is currently active
      * @param mixed $url The url to check, can be and valid router string or array
@@ -77,7 +88,7 @@ class NavigationHelper extends HtmlHelper {
         if($currentRoute[0] == $url) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -85,16 +96,16 @@ class NavigationHelper extends HtmlHelper {
      * Checks if a given url is currently active controller
      * @param mixed $url The url to check, can be and valid router string or array
      * @return boolean Returns true if the passed url is active
-     */ 
+     */
     function isActiveController($url) {
         if(!is_array($url)) {
             $url = Router::parse($url);
         }
-        
+
         if($url['controller'] == $this->params['controller']) {
             return true;
         }
-        
+
         return false;
     }
 }
