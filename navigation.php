@@ -34,21 +34,26 @@ class NavigationHelper extends HtmlHelper {
             if(count($item) == 2) {
                 list($text, $url) = $items;
                 $itemOptions = array();
-            }else if(count($item) == 4) {
-                list($text, $url, $itemOptions, $liclass) = $item;
             }else{
             	list($text, $url, $itemOptions) = $item;
             }
 
-            if(!isset($liclass) || empty($liclass)) {
-            	$class['active'] = 'active';
-            	$class['notActive'] = '';
-            }else{
-            	$class = $liclass;
-            	unset($liclass);
-            }
-            $links[] = sprintf($this->tags['li'], ' class="'.($this->isActiveController($url) ? $class['active'] : $class['notActive']).'"', parent::link($text, $url, $itemOptions));
-            unset($itemOptions);
+            if(isset($itemOptions['activeClass']) && !empty($itemOptions['activeClass'])){
+            	$class['activeClass'] = $itemOptions['activeClass'];
+        	}else{
+        		$class['activeClass'] = 'active';
+        	}
+
+            if(isset($itemOptions['nonActiveClass']) && !empty($itemOptions['nonActiveClass'])){
+            	$class['nonActiveClass'] = $itemOptions['nonActiveClass'];
+        	}else{
+        		$class['nonActiveClass'] = '';
+        	}
+
+        	unset($itemOptions['activeClass'], $itemOptions['nonActiveClass']);
+
+            $links[] = sprintf($this->tags['li'], ' class="'.($this->isActiveController($url) ? $class['activeClass'] : $class['nonActiveClass']).'"', parent::link($text, $url, $itemOptions));
+            unset($class, $itemOptions);
         }
 
         return sprintf($this->tags['ul'], $this->_parseAttributes($attributes, null, ' ', ''), implode("\n", $links));
