@@ -32,7 +32,7 @@ class NavigationHelper extends HtmlHelper {
 
         foreach($items as $item) {
             if(count($item) == 2) {
-                list($text, $url) = $items;
+                list($text, $url) = $item;
                 $itemOptions = array();
             }else{
             	list($text, $url, $itemOptions) = $item;
