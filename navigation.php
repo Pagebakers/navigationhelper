@@ -118,11 +118,9 @@ class NavigationHelper extends HtmlHelper {
      * @return boolean Returns true if the passed url is active
      */
     function isActive($url) {
-        $currentRoute = Router::currentRoute();
-
         $url = Router::url($url);
 
-        if($currentRoute[0] == $url) {
+        if(Router::url() == $url) {
             return true;
         }
 
